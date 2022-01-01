@@ -42,8 +42,8 @@ public class PieceManager {
             new Rook  (false, 0, 0),
             new Knight(false, 1, 0),
             new Bishop(false, 2, 0),
-            new Queen (false, 3, 0),
             new King  (false, 4, 0),
+            new Queen (false, 3, 0),
             new Bishop(false, 5, 0),
             new Knight(false, 6, 0),
             new Rook  (false, 7, 0),
@@ -76,8 +76,8 @@ public class PieceManager {
             new Rook  (true, 0, 7),
             new Knight(true, 1, 7),
             new Bishop(true, 2, 7),
-            new Queen (true, 3, 7),
             new King  (true, 4, 7),
+            new Queen (true, 3, 7),
             new Bishop(true, 5, 7),
             new Knight(true, 6, 7),
             new Rook  (true, 7, 7),
@@ -99,9 +99,13 @@ public class PieceManager {
     }
 
     public static boolean movePiece(int px, int py, int x, int y){
-        if(pieces[px][py] == null) return true;
-        if(pieces[x][y] != null && (pieces[px][py].team == pieces[x][y].team)) {System.out.println(App.ANSI_RED + "Your team's piece is there! " + pieces[x][y].team + ", " + pieces[px][py].team + App.ANSI_RESET); return true;}
-        if(pieces[px][py].team == App.turn) {System.out.println(App.ANSI_RED + "Wait for your turn!" + App.ANSI_RESET); return true;}
+        boolean ohno = false;
+
+        if(pieces[px][py] == null) ohno = App.error("No piece there!");
+        if(pieces[x][y] != null && (pieces[px][py].getTeam() == pieces[x][y].getTeam())) ohno = App.error("Your team's piece is there!");
+        if(pieces[px][py].getTeam() != App.turn) ohno = App.error("Please wait for your turn!");
+
+        if(ohno) return true;
 
         pieces[x][y] = pieces[px][py];
         pieces[px][py] = null;

@@ -20,9 +20,10 @@ public class Board {
 
 
     void print(){
-        System.out.println("| A | B | C | D | E | F | G | H |");
-        System.out.println("+---+---+---+---+---+---+---+---+---");
+        System.out.println(Ansi.BLACK + " o | A | B | C | D | E | F | G | H | o");
+        System.out.println("---+---+---+---+---+---+---+---+---+---");
         for(int x = 0; x < board.length; x ++){
+            System.out.print(" " + (x + 1) + " ");
             for(int y = 0; y < board[0].length; y ++){
                 short absPiece = board[x][y];
                 System.out.print("|");
@@ -30,10 +31,11 @@ public class Board {
                     System.out.print("   ");
                     continue;
                 }
+
                 if(absPiece < 7)
-                    System.out.print(App.ANSI_BLUE + "b ");
+                    System.out.print(Ansi.BLUE + "b ");
                 else {
-                    System.out.print(App.ANSI_WHITE + "w ");
+                    System.out.print(Ansi.WHITE + "w ");
                     absPiece -= 6;
                 }
 
@@ -60,12 +62,13 @@ public class Board {
                     default:
                         System.out.print("_");
                 }
-                System.out.print(App.ANSI_RESET);
+                System.out.print(Ansi.BLACK);
                 
             }
                 System.out.print("| " + (x + 1) + "\n");
-                System.out.println("+---+---+---+---+---+---+---+---+---");
-        }
+                System.out.println("---+---+---+---+---+---+---+---+---+---");
+            }
+            System.out.println(" o | A | B | C | D | E | F | G | H | o" + Ansi.RESET);
     }
 
     void move(byte px, byte py, byte x, byte y){
@@ -73,6 +76,7 @@ public class Board {
         board[px][py] = 0;
 
         App.turn = App.turn ? false : true;
+
     }
 
     void debugPrint(){

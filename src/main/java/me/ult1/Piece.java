@@ -1,10 +1,13 @@
 package me.ult1;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+
 public interface Piece {
-    public byte x = -1, y = -1;
-    public boolean team = false;
-    final int type = 0;
     abstract boolean canMove(byte px, byte py, byte x, byte y);
+    abstract boolean getTeam();
+    abstract byte getX();
+    abstract byte getY();
 }
 
 class Rook implements Piece {
@@ -23,22 +26,33 @@ class Rook implements Piece {
         int xs = Math.abs(px - x);
         int ys = Math.abs(py - y);
         // if(!(px - x == 0 && py - y == 0)) return true; // XOR <- not anymore, i think
-        if((xs > 0 && ys == 0) || (ys > 0 && xs == 0)) return true;
-        byte _x = px;
-        byte _y = py;
-        while(_x != x && _y != y){
-            _x += px - x;
-            _y += py - y;
-            if(App.getBoard().get(_x, _y) > 0) return true;
-        }
+        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0)) return true;
+        // byte _x = px;
+        // byte _y = py;
+        // while(_x != x || _y != y){
+        //     _x += px - x;
+        //     _y += py - y;
+        //     System.out.println("_x: " + _x + " _y: " + _y);
+        //     if(App.getBoard().get(_x, _y) > 0) return true;
+        // }
 
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     if(this.x - x == 0 && !(this.y - y == 0)) return true; // XOR
-    //     return false;
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
 
 class Knight implements Piece {
@@ -59,11 +73,20 @@ class Knight implements Piece {
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     if((Math.abs(this.x - x) == 2 && Math.abs(this.y - y) == 1) ||
-    //        (Math.abs(this.x - x) == 1 && Math.abs(this.y - y) == 2)) return true;
-    // return false;
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
 
 class Bishop implements Piece {
@@ -81,21 +104,31 @@ class Bishop implements Piece {
     public boolean canMove(byte px, byte py, byte x, byte y) {
         if(Math.abs(px - x) == Math.abs(py - y)) return true;
 
-        byte _x = px;
-        byte _y = py;
-        while(_x != x && _y != y){
-            _x += px - x;
-            _y += py - y;
-            if(App.getBoard().get(_x, _y) > 0) return true;
-        }
+        // byte _x = px;
+        // byte _y = py;
+        // while(_x != x && _y != y){
+        //     _x += px - x;
+        //     _y += py - y;
+        //     if(App.getBoard().get(_x, _y) > 0) return true;
+        // }
 
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     if(Math.abs(this.x - x) == Math.abs(this.y - y)) return true;
-    //     return false;
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
 
 class King implements Piece {
@@ -113,16 +146,29 @@ class King implements Piece {
     public boolean canMove(byte px, byte py, byte x, byte y) {
         int xs = Math.abs(px - x);
         int ys = Math.abs(py - y);
-        if((xs <= 1 && ys <= 1) && !(px == x && py == y)) return true;
+
+        System.out.println("1: " + (xs == 1 && ys == 0));
+        System.out.println("2: " + (xs == 0 && ys == 1));
+        System.out.println("3: " + (xs == 1 && ys == 1));
+
+        if((xs == 1 && ys == 0) || (xs == 0 && ys == 1) || (xs == 1 && ys == 1)) return true;
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     int xs = Math.abs(this.x - x);
-    //     int ys = Math.abs(this.y - y);
-    //     if((xs <= 1 && ys <= 1) && !(this.x == x && this.y == y)) return true;
-    //     return false;
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
 
 class Queen implements Piece {
@@ -138,7 +184,12 @@ class Queen implements Piece {
 
     @Override
     public boolean canMove(byte px, byte py, byte x, byte y) {
-        if(!(px - x == 0 && py - y == 0) || (Math.abs(px - x) == Math.abs(py - y))) return true;
+        // if(!(px - x == 0 && py - y == 0) || (Math.abs(px - x) == Math.abs(py - y))) return true;
+        int xs = Math.abs(px - x);
+        int ys = Math.abs(py - y);
+        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0)) return true;
+        if(xs == ys) return true;
+
 
         byte _x = px;
         byte _y = py;
@@ -151,42 +202,70 @@ class Queen implements Piece {
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     if(!(this.x - x == 0 && this.y - y == 0) || (Math.abs(this.x - x) == Math.abs(this.y - y)) ||
-    //        (Math.abs(this.x - x) == Math.abs(this.y - y))) return true;
-    //     return false;
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
 
 class Pawn implements Piece {
+
     public byte x, y;
 
     private final byte _1;
-    public boolean team;
+    public boolean team = true;
     final int type = 6;
     boolean firstMove = true;
 
-    Pawn(boolean team, int x, int y){
+    Pawn(boolean _team, int x, int y){
         this.x = (byte) x;
         this.y = (byte) y;
-        this.team = team;
-        _1 = (byte) (team ? 1 : 0);
+        this.team = _team;
+        _1 = (byte) (_team ? 1 : -1);
     }
 
     @Override
     public boolean canMove(byte px, byte py, byte x, byte y) {
-        firstMove = false;
-        if(py - y == _1) return true;
-        if(App.getBoard().get(x, y) > 0 && py - y == _1 && Math.abs(px - x) == 1) return true;
-        if(firstMove && (py - y == _1 * 2)) return true;
+        System.out.println("_1: " + _1);
+        System.out.println("py - y: " + (py - y));
+
+        boolean isPieceAt = App.getBoard().get(px, (short) (py + _1)) > 0;
         
-        firstMove = true;
+        // App.logger.log(Level.INFO, isPieceAt);
+        App.logger.log(Level.INFO, py - y == _1);
+        App.logger.log(Level.INFO, isPieceAt  && py - y == _1 && Math.abs(px - x) == 1);
+        App.logger.log(Level.INFO, firstMove && (py - y == _1 * 2));
+
+
+        if(py - y == _1 && px - x == 0) {firstMove = false; return true;}
+        if(isPieceAt  && py - y == _1 && Math.abs(px - x) == 1) {firstMove = false; return true;}
+        if(firstMove && (py - y == _1 * 2) && px - x == 0) {firstMove = false; return true;}
+        
         return false;
     }
 
-    // public boolean canMove(byte x, byte y) {
-    //     if(this.y - y == _1) return true;
-    //     else if(App.getBoard().get(x, y) > 0 && this.y - y == _1 && Math.abs(this.x - x) == 1) return true;
-    //     return false; // the cool sounding french thing or smth ^^^^^^^^^^^^^^^^^^
-    // }
+    @Override
+    public boolean getTeam() {
+        return this.team;
+    }
+
+    @Override
+    public byte getX() {
+        return this.x;
+    }
+
+    @Override
+    public byte getY() {
+        return this.y;
+    }
 }
