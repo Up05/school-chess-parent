@@ -1,8 +1,5 @@
 package me.ult1;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-
 public interface Piece {
     abstract boolean canMove(byte px, byte py, byte x, byte y);
     abstract boolean getTeam();
@@ -26,17 +23,9 @@ class Rook implements Piece {
         int xs = Math.abs(px - x);
         int ys = Math.abs(py - y);
         // if(!(px - x == 0 && py - y == 0)) return true; // XOR <- not anymore, i think
-        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0)) return true;
-        // byte _x = px;
-        // byte _y = py;
-        // while(_x != x || _y != y){
-        //     _x += px - x;
-        //     _y += py - y;
-        //     System.out.println("_x: " + _x + " _y: " + _y);
-        //     if(App.getBoard().get(_x, _y) > 0) return true;
-        // }
-
-        return false;
+        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0)); else return false; // cba
+        if(PieceManager.willCollide(px, py, x, y)) return false;
+        return true;
     }
 
     @Override
@@ -102,17 +91,11 @@ class Bishop implements Piece {
 
     @Override
     public boolean canMove(byte px, byte py, byte x, byte y) {
-        if(Math.abs(px - x) == Math.abs(py - y)) return true;
 
-        // byte _x = px;
-        // byte _y = py;
-        // while(_x != x && _y != y){
-        //     _x += px - x;
-        //     _y += py - y;
-        //     if(App.getBoard().get(_x, _y) > 0) return true;
-        // }
+        if(Math.abs(px - x) == Math.abs(py - y)); else return false;
+        if(PieceManager.willCollide(px, py, x, y)) return false;
 
-        return false;
+        return true;
     }
 
     @Override
@@ -184,22 +167,13 @@ class Queen implements Piece {
 
     @Override
     public boolean canMove(byte px, byte py, byte x, byte y) {
-        // if(!(px - x == 0 && py - y == 0) || (Math.abs(px - x) == Math.abs(py - y))) return true;
         int xs = Math.abs(px - x);
         int ys = Math.abs(py - y);
-        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0)) return true;
-        if(xs == ys) return true;
 
+        if(xs != 0 && !(ys != 0) || ys != 0 && !(xs != 0) || xs == ys); else return false;
+        if(PieceManager.willCollide(px, py, x, y)) return false;
 
-        byte _x = px;
-        byte _y = py;
-        while(_x != x && _y != y){
-            _x += px - x;
-            _y += py - y;
-            if(App.getBoard().get(_x, _y) > 0) return true;
-        }
-
-        return false;
+        return true;
     }
 
     @Override
@@ -236,16 +210,8 @@ class Pawn implements Piece {
 
     @Override
     public boolean canMove(byte px, byte py, byte x, byte y) {
-        System.out.println("_1: " + _1);
-        System.out.println("py - y: " + (py - y));
 
         boolean isPieceAt = App.getBoard().get(px, (short) (py + _1)) > 0;
-        
-        // App.logger.log(Level.INFO, isPieceAt);
-        App.logger.log(Level.INFO, py - y == _1);
-        App.logger.log(Level.INFO, isPieceAt  && py - y == _1 && Math.abs(px - x) == 1);
-        App.logger.log(Level.INFO, firstMove && (py - y == _1 * 2));
-
 
         if(py - y == _1 && px - x == 0) {firstMove = false; return true;}
         if(isPieceAt  && py - y == _1 && Math.abs(px - x) == 1) {firstMove = false; return true;}

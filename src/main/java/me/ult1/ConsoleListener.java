@@ -6,6 +6,8 @@ public class ConsoleListener { // constructor -> listen -> parse -> execute -> l
     long ansi_i = 1;
     String help = "";
 
+    private String _cmd = "";
+
     ConsoleListener(){
         help += "----------------------------------------------------------------------------------------------------------------\n";
         help += "commands: \n";
@@ -22,7 +24,6 @@ public class ConsoleListener { // constructor -> listen -> parse -> execute -> l
             return;
         System.out.print(Ansi.YELLOW + "command: " + Ansi.RESET);
         try {
-            System.out.print("\007");
             parse(App.reader.readLine());
         } catch (Exception e) {
             System.out.println(Ansi.RED + "Please insert a valid value! use \"help\" for list of commands" + Ansi.RESET);
@@ -35,6 +36,7 @@ public class ConsoleListener { // constructor -> listen -> parse -> execute -> l
 
         String[] _str = str.split(" ");
         cmd = _str[0];
+        _cmd = cmd;
         for(int i = 1; i < _str.length; i ++){
                 params.add(_str[i]);
         }
@@ -42,51 +44,55 @@ public class ConsoleListener { // constructor -> listen -> parse -> execute -> l
     }
 
     public void execute(String cmd, Queue<String> params){
-
-        if(cmd.matches(".*mv*")){
+        if(is("mv")){ // cmd.matches\("\.\*(.*)\*"\)    <-- regex, ctrl + h
             String[] pxy = params.poll().split("");
             String[] xy = params.poll().split("");
-
-            System.out.println("params: " + pxy[0] + pxy[1] + ", " + xy[0] + xy[1]);
             
-            int px = Integer.parseInt(pxy[1], 10) - 1;
-            int py = ((int) pxy[0].toLowerCase().charAt(0)) - 97;
+            int px = ((int) pxy[0].toLowerCase().charAt(0)) - 97;
+            int py = Integer.parseInt(pxy[1], 10) - 1;
             
-            int x  = Integer.parseInt( xy[1], 10) - 1;
-            int y = ((int) xy[0].toLowerCase().charAt(0)) - 97;
+            int x  = ((int) xy[0].toLowerCase().charAt(0)) - 97;
+            int y  = Integer.parseInt( xy[1], 10) - 1;
 
             if(px - x == 0 && py - y == 0){
                 App.error("Please move your piece!");
             }
 
             if(PieceManager.getPieceAt(px, py) != null){
-                if(PieceManager.getPieceAt(px, py).canMove((byte) py, (byte) px, (byte) y, (byte) x) ){ 
+                if(PieceManager.getPieceAt(px, py).canMove((byte) px, (byte) py, (byte) x, (byte) y) ){ 
+                    boolean isKing = PieceManager.getPieceAt(x, y) instanceof King;
                     if(PieceManager.movePiece(px, py, x, y));
-                    else App.getBoard().print();
+                    else {
+                        App.getBoard().print();
+                        if(isKing) {
+                            System.out.print(Ansi.YELLOW + Ansi.BLINK);
+                            System.out.println("---------------------------------------------------------------------------\n");
+                            System.out.println("                            V  I  C  T  O  R  Y                            \n");
+                            System.out.println("---------------------------------------------------------------------------");
+                            System.out.print(Ansi.RESET);
+                            App.closed = true;
+                        }
+                    }
                 } else {
                     App.error("Cannot move to there!");
                 }
             }
-            // } else {
-            //     System.out.println(Ansi.RED + "There is no piece there!" + Ansi.RESET);
-            // }
-
-        } else if(cmd.matches(".*debugboard*")){
+        } else if(is("debugboard")){
             App.getBoard().debugPrint();
-        } else if(cmd.matches(".*help*")){
+        } else if(is("help")){
             System.out.println(help + Ansi.YELLOW + "\n\nCommands are used by typing in the command and then each parameter seperated by a single space.\n" + "Example: \n\tpug lola 30cm aww\n" + Ansi.RESET + "----------------------------------------------------------------------------------------------------------------");
-        } else if(cmd.matches(".*clear*")){
+        } else if(is("clear")){
             App.getBoard().print();
-        } else if(cmd.matches(".*exit*")){
+        } else if(is("exit")){
             App.closed = true;
-        } else if(cmd.matches(".*ansi*")){
+        } else if(is("ansi")){
             ansi_i ++;
             Ansi.toggleAnsi(ansi_i % 2 == 0 ? false : true);
-        } else if(cmd.matches(".*debug*")){
+        } else if(is("debug")){
             System.out.println(Ansi.GREEN + "turn: " + App.turn + ", " + (!App.turn ? "black" : "white"));
             System.out.println("");
             System.out.println(Ansi.RESET);
-        } else if(cmd.matches(".*piece*")){
+        } else if(is("piece")){
             if(params.size() == 2){
                 int x = Integer.parseInt(params.poll());
                 int y = Integer.parseInt(params.poll());
@@ -109,17 +115,38 @@ public class ConsoleListener { // constructor -> listen -> parse -> execute -> l
                     System.out.print(Ansi.RESET);
                 }
             }
-        }
-        else {
-            System.out.println(Ansi.RED + "The command doesn't exist!" + Ansi.RESET);
+        } else if(is("win")){
+            System.out.print(Ansi.YELLOW + Ansi.BLINK);
+            System.out.println("---------------------------------------------------------------------------\n");
+            System.out.println("                            V  I  C  T  O  R  Y                            \n");
+            System.out.println("---------------------------------------------------------------------------");
+            System.out.print(Ansi.RESET);
+        } else if(is("delete")){
+            String[] xy = params.poll().split("");
+
+            int x  = Integer.parseInt( xy[1], 10) - 1;
+            int y = ((int) xy[0].toLowerCase().charAt(0)) - 97;
+
+            PieceManager.setPiece(x, y, null);
+            App.getBoard().set(x, y, 0);
+            App.getBoard().print();
         }
 
+
+        else System.out.println(Ansi.RED + "The command doesn't exist!" + Ansi.RESET);
         listen();
-    } 
+    }
+
+    private boolean is(String str){
+        if(_cmd.equalsIgnoreCase(str)) return true;
+        return false;
+    }
 
     public void addToHelp(String cmd, String expl){
         help += Ansi.PURPLE + cmd + Ansi.WHITE + " - ";
         help += Ansi.GREEN + expl + "\n" +  Ansi.RESET;
     }
+
+
 
 }

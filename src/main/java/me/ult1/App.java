@@ -85,8 +85,10 @@ public class App {
         return true;
     }
 
-    public static boolean debug(Object object){
-        System.out.println(Ansi.YELLOW + object.getClass().getName() + ": " + object + Ansi.RESET);
+    public static boolean debug(Object... objects){
+        // System.out.println(Ansi.YELLOW + object.getClass().descriptorString() + ": " + object + Ansi.RESET);
+        for(Object object : objects)
+        System.out.println(Ansi.YELLOW + "log: " + Ansi.BLUE + object + Ansi.RESET);
         return true;
     }
 }

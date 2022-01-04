@@ -13,12 +13,6 @@ public class Board {
         {7, 8, 9, 10, 11, 9, 8, 7},
     };
 
-
-    Board(){
-        
-    }
-
-
     void print(){
         System.out.println(Ansi.BLACK + " o | A | B | C | D | E | F | G | H | o");
         System.out.println("---+---+---+---+---+---+---+---+---+---");
@@ -72,8 +66,8 @@ public class Board {
     }
 
     void move(byte px, byte py, byte x, byte y){
-        board[x][y] = board[px][py];
-        board[px][py] = 0;
+        board[y][x] = board[py][px];
+        board[py][px] = 0;
 
         App.turn = App.turn ? false : true;
 
@@ -88,14 +82,21 @@ public class Board {
     }
 
     public short get(short x, short y){
-        return board[x][y];
+        return board[y][x];
     }
+    @Deprecated
     public Board set(short x, short y, short piece){
-        board[x][y] = piece;
+        board[y][x] = piece;
         return this;
     }
+    @Deprecated
     public Board set(short x, short y, int piece){
-        board[x][y] = (short) piece;
+        board[y][x] = (short) piece;
+        return this;
+    }
+
+    public Board set(int x, int y, int piece){
+        board[y][x] = (byte) piece;
         return this;
     }
 }
