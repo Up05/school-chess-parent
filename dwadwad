@@ -1,0 +1,261 @@
+#include <iostream>
+#include <math.h>
+#include <stdlib.h>
+
+//#include "../include/PieceManager.h"
+
+
+//struct a {int f(){return 5;}}; // neveikia
+//
+//
+//struct b {int f();};           // veikia
+//int b::f(){ return 5;}
+
+
+
+
+
+#define DWADW
+#ifdef DWADW
+
+struct Piece {
+//    Piece(bool _team, int _x, int _y);
+    public:
+    virtual bool canMove(int px, int py, int x, int y);
+    virtual bool getTeam();
+    virtual int getX();
+    virtual int getY();
+};
+
+struct Rook : Piece {
+    int x, y;
+    bool team;
+
+    Rook(bool _team, int _x, int _y);
+
+    bool canMove(int px, int py, int x, int y) {
+        int xs = abs(px - x);
+        int ys = abs(py - y);
+        // if(!(px - x == 0 && py - y == 0)) return true; // XOR <- not anymore, i think
+        if((xs != 0 && !(ys != 0)) || (ys != 0 && !(xs != 0))); else return false; // cba
+        if(willCollide(px, py, x, y)) return false;
+        return true;
+    };
+
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+Rook::Rook(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+    };
+
+struct Knight : Piece {
+    int x, y;
+    bool team;
+
+
+    Knight(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+    }
+
+
+    bool canMove(int px, int py, int x, int y) {
+        if((abs(px - x) == 2 && abs(py - y) == 1) || (abs(px - x) == 1 && abs(py - y) == 2))
+            return true;
+        return false;
+    }
+
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+struct Bishop : Piece {
+    int x, y;
+    bool team;
+
+    Bishop(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+    }
+
+
+    bool canMove(int px, int py, int x, int y) {
+
+        if(abs(px - x) == abs(py - y)); else return false;
+        if(willCollide(px, py, x, y)) return false;
+
+        return true;
+    }
+
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+struct King : Piece {
+    int x, y;
+    bool team;
+
+    King(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+    }
+
+
+    bool canMove(int px, int py, int x, int y) {
+        int xs = abs(px - x);
+        int ys = abs(py - y);
+
+        if((xs == 1 && ys == 0) || (xs == 0 && ys == 1) || (xs == 1 && ys == 1)) return true;
+        return false;
+    }
+
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+struct Queen : Piece {
+    int x, y;
+    bool team;
+
+    Queen(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+    }
+
+
+bool canMove(int px, int py, int x, int y) {
+        int xs = abs(px - x);
+        int ys = abs(py - y);
+
+        if(((xs != 0 && !(ys != 0)) || (ys != 0 && !(xs != 0))) || xs == ys); else return false;
+//        if(willCollide(px, py, x, y)) return false;
+
+        return true;
+    }
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+struct Pawn : Piece {
+
+    int x, y;
+
+    int _1;
+    bool team;
+    bool firstMove;
+
+    Pawn(bool _team, int _x, int _y){
+        x = _x;
+        y = _y;
+        team = _team;
+        firstMove = true;
+        _1 = (_team ? 1 : -1);
+    }
+
+
+    bool canMove(int px, int py, int x, int y) {
+
+//        bool isPieceAt = App.getBoard().get(px, (short) (py + _1)) > 0;
+
+        if(py - y == _1 && px - x == 0) {firstMove = false; return true;}
+        if((isPieceAt && py - y == _1) && abs(px - x) == 1) {firstMove = false; return true;}
+        if(firstMove && (py - y == _1 * 2) && px - x == 0) {firstMove = false; return true;}
+
+        return false;
+    }
+
+
+    bool getTeam() {
+        return team;
+    }
+
+
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+        return y;
+    }
+};
+
+struct NullPiece : Piece {
+    int x, y;
+    bool team;
+
+    bool canMove(int px, int py, int x, int y) {return false;}
+    bool getTeam() {return false;}
+    int getX()     {return x;}
+    int getY()     {return y;}
+}; // "n u l l p t r".
+
+#endif
